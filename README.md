@@ -274,53 +274,64 @@ List<Employee> employees = sqlQuery.list();
 
 Java'da veritabanı erişimi için farklı seviyelerde teknolojiler mevcuttur. Basit uygulamalar için JDBC yeterli olabilirken, daha karmaşık sistemlerde DAO pattern veya ORM çözümleri tercih edilebilir. Hibernate gibi ORM araçları veritabanı işlemlerini kolaylaştırsa da, performans kritik uygulamalarda JDBC'nin daha verimli olabileceği unutulmamalıdır.
 
+## **JDBC (Java Database Connectivity) Nedir?**
 
-JDBC (Java Database Connectivity) Nedir?
 JDBC, Java uygulamalarının veritabanlarıyla iletişim kurmasını sağlayan bir API'dir. Standart bir arayüz sunarak farklı veritabanı sistemleriyle tutarlı bir şekilde çalışmamızı sağlar.
 
-Temel Konseptler
-1. Bağlantı Yönetimi (Connection Management)
-DriverManager: Veritabanı bağlantısı oluşturur
+## **Temel Konseptler**
 
-Connection: Veritabanı bağlantısını temsil eder
+### **1. Bağlantı Yönetimi (Connection Management)**
 
-Önemli: Kaynakları uygun şekilde kapatmak için try-with-resources kullanın
+- **`DriverManager`**: Veritabanı bağlantısı oluşturur
+- **`Connection`**: Veritabanı bağlantısını temsil eder
+- Önemli: Kaynakları uygun şekilde kapatmak için try-with-resources kullanın
 
-2. Sorgu Çalıştırma
-Statement: Basit SQL sorguları için
+### **2. Sorgu Çalıştırma**
 
-PreparedStatement: Parametreli sorgular için (SQL Injection'a karşı güvenli)
+- **`Statement`**: Basit SQL sorguları için
+- **`PreparedStatement`**: Parametreli sorgular için (SQL Injection'a karşı güvenli)
+- **`CallableStatement`**: Stored procedure çağrıları için
 
-CallableStatement: Stored procedure çağrıları için
+### **3. Sonuç İşleme**
 
-3. Sonuç İşleme
-ResultSet: Sorgu sonuçlarını okumak için
+- **`ResultSet`**: Sorgu sonuçlarını okumak için
+- **`ResultSetMetaData`**: Sonuç kümesi hakkında meta veri sağlar
 
-ResultSetMetaData: Sonuç kümesi hakkında meta veri sağlar
+### **4. Transaction Yönetimi**
 
-4. Transaction Yönetimi
-ACID özelliklerini sağlamak için
+- ACID özelliklerini sağlamak için
+- **`commit()`** ve **`rollback()`** metodları
 
-commit() ve rollback() metodları
+### **5. Batch İşlemler**
 
-5. Batch İşlemler
-Çoklu sorguları tek seferde çalıştırmak için
+- Çoklu sorguları tek seferde çalıştırmak için
 
-CRUD İşlemleri
+## **CRUD İşlemleri**
+
 CRUD (Create, Read, Update, Delete) temel veritabanı operasyonlarını ifade eder:
 
-Create (Oluşturma)
+### **Create (Oluşturma)**
+
 java
+
 Copy
+
+```
 String sql = "INSERT INTO employees (first_name, last_name) VALUES (?, ?)";
 try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
     pstmt.setString(1, "John");
     pstmt.setString(2, "Doe");
     pstmt.executeUpdate();
 }
-Read (Okuma)
+```
+
+### **Read (Okuma)**
+
 java
+
 Copy
+
+```
 String sql = "SELECT * FROM employees";
 try (Statement stmt = conn.createStatement();
      ResultSet rs = stmt.executeQuery(sql)) {
@@ -328,56 +339,87 @@ try (Statement stmt = conn.createStatement();
         System.out.println(rs.getString("first_name"));
     }
 }
-Update (Güncelleme)
+```
+
+### **Update (Güncelleme)**
+
 java
+
 Copy
+
+```
 String sql = "UPDATE employees SET last_name = ? WHERE id = ?";
 try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
     pstmt.setString(1, "Smith");
     pstmt.setInt(2, 1);
     pstmt.executeUpdate();
 }
-Delete (Silme)
+```
+
+### **Delete (Silme)**
+
 java
+
 Copy
+
+```
 String sql = "DELETE FROM employees WHERE id = ?";
 try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
     pstmt.setInt(1, 1);
     pstmt.executeUpdate();
 }
-Transaction Yönetimi
+```
+
+## **Transaction Yönetimi**
+
 Transaction'lar, bir grup veritabanı işlemini atomik bir birim olarak çalıştırmamızı sağlar:
 
 java
+
 Copy
+
+```
 try {
     conn.setAutoCommit(false); // Auto-commit'i kapat
-    
+
     // Transaction işlemleri
     updateAccount(conn, "account1", -100);
     updateAccount(conn, "account2", 100);
-    
+
     conn.commit(); // Tüm işlemler başarılı ise commit
 } catch (SQLException e) {
     conn.rollback(); // Hata olursa rollback
 } finally {
     conn.setAutoCommit(true); // Auto-commit'i tekrar aç
 }
-Stored Procedure Kullanımı
+```
+
+## **Stored Procedure Kullanımı**
+
 Stored procedure'ler veritabanı sunucusunda saklanan önceden derlenmiş SQL kodlarıdır:
 
-IN Parametreli
+### **IN Parametreli**
+
 java
+
 Copy
+
+```
 String sql = "{call increase_salaries_for_department(?, ?)}";
 try (CallableStatement cstmt = conn.prepareCall(sql)) {
     cstmt.setString(1, "Engineering");
     cstmt.setDouble(2, 10000);
     cstmt.execute();
 }
-OUT Parametreli
+```
+
+### **OUT Parametreli**
+
 java
+
 Copy
+
+```
 String sql = "{call get_count_for_department(?, ?)}";
 try (CallableStatement cstmt = conn.prepareCall(sql)) {
     cstmt.setString(1, "Engineering");
@@ -385,9 +427,15 @@ try (CallableStatement cstmt = conn.prepareCall(sql)) {
     cstmt.execute();
     int count = cstmt.getInt(2);
 }
-INOUT Parametreli
+```
+
+### **INOUT Parametreli**
+
 java
+
 Copy
+
+```
 String sql = "{call greet_the_department(?)}";
 try (CallableStatement cstmt = conn.prepareCall(sql)) {
     cstmt.registerOutParameter(1, Types.VARCHAR);
@@ -395,9 +443,15 @@ try (CallableStatement cstmt = conn.prepareCall(sql)) {
     cstmt.execute();
     String result = cstmt.getString(1);
 }
-ResultSet Döndüren
+```
+
+### **ResultSet Döndüren**
+
 java
+
 Copy
+
+```
 String sql = "{call get_employees_for_department(?)}";
 try (CallableStatement cstmt = conn.prepareCall(sql)) {
     cstmt.setString(1, "Engineering");
@@ -408,23 +462,26 @@ try (CallableStatement cstmt = conn.prepareCall(sql)) {
         }
     }
 }
-Önemli JDBC Konseptleri
-Kaynak Yönetimi: Connection, Statement ve ResultSet nesnelerini her zaman kapatın
+```
 
-SQL Injection: PreparedStatement kullanarak önleyin
+## **Önemli JDBC Konseptleri**
 
-Connection Pooling: Verimli bağlantı yönetimi için
+1. **Kaynak Yönetimi**: Connection, Statement ve ResultSet nesnelerini her zaman kapatın
+2. **SQL Injection**: PreparedStatement kullanarak önleyin
+3. **Connection Pooling**: Verimli bağlantı yönetimi için
+4. **Batch İşlemler**: Çoklu ekleme/güncelleme işlemlerinde performans için
+5. **Transaction Isolation Levels**: Veri tutarlılığı için uygun seviyeyi seçin
+6. **MetaData API**: Veritabanı şeması hakkında bilgi almak için
 
-Batch İşlemler: Çoklu ekleme/güncelleme işlemlerinde performans için
+## **JDBC Cheat Sheet'leri**
 
-Transaction Isolation Levels: Veri tutarlılığı için uygun seviyeyi seçin
+### **1. Temel JDBC İşlemleri**
 
-MetaData API: Veritabanı şeması hakkında bilgi almak için
-
-JDBC Cheat Sheet'leri
-1. Temel JDBC İşlemleri
 markdown
+
 Copy
+
+```
 1. Bağlantı oluşturma:
    Connection conn = DriverManager.getConnection(url, user, pass);
 
@@ -436,9 +493,15 @@ Copy
    PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM table WHERE id=?");
    pstmt.setInt(1, 123);
    ResultSet rs = pstmt.executeQuery();
-2. Transaction Yönetimi
+```
+
+### **2. Transaction Yönetimi**
+
 markdown
+
 Copy
+
+```
 1. Transaction başlatma:
    conn.setAutoCommit(false);
 
@@ -451,9 +514,15 @@ Copy
 4. Savepoint:
    Savepoint savepoint = conn.setSavepoint();
    conn.rollback(savepoint);
-3. Stored Procedure Kullanımı
+```
+
+### **3. Stored Procedure Kullanımı**
+
 markdown
+
 Copy
+
+```
 1. IN parametre:
    CallableStatement cstmt = conn.prepareCall("{call proc_name(?)}");
    cstmt.setString(1, "value");
@@ -468,33 +537,36 @@ Copy
 4. ResultSet döndürme:
    cstmt.execute();
    ResultSet rs = cstmt.getResultSet();
-4. Best Practices
+```
+
+### **4. Best Practices**
+
 markdown
+
 Copy
+
+```
 1. Her zaman try-with-resources kullanın
 2. PreparedStatement ile SQL Injection'ı önleyin
 3. Connection pool kullanın (HikariCP gibi)
 4. Büyük ResultSet'ler için fetchSize ayarlayın
 5. Batch işlemler için addBatch() ve executeBatch() kullanın
 6. Veritabanı kaynaklarını (Connection, Statement, ResultSet) uygun şekilde kapatın
-Performans İpuçları
-Batch İşlemler: Çoklu ekleme/güncelleme işlemlerinde addBatch() ve executeBatch() kullanın
+```
 
-Fetch Size: Büyük sonuç kümeleri için uygun fetch size belirleyin
+## **Performans İpuçları**
 
-Connection Pooling: Bağlantı oluşturma maliyetini azaltmak için
+1. **Batch İşlemler**: Çoklu ekleme/güncelleme işlemlerinde **`addBatch()`** ve **`executeBatch()`** kullanın
+2. **Fetch Size**: Büyük sonuç kümeleri için uygun fetch size belirleyin
+3. **Connection Pooling**: Bağlantı oluşturma maliyetini azaltmak için
+4. **Statement Caching**: Sık kullanılan sorgular için
+5. **MetaData Kullanımı**: Gereksiz meta data sorgularından kaçının
 
-Statement Caching: Sık kullanılan sorgular için
+## **Hata Yönetimi**
 
-MetaData Kullanımı: Gereksiz meta data sorgularından kaçının
-
-Hata Yönetimi
-SQLException yakalayın ve uygun şekilde işleyin
-
-Hata kodlarını ve durumlarını kontrol edin
-
-Transaction'larda hata durumunda mutlaka rollback yapın
-
-Kaynakları finally bloğunda veya try-with-resources ile kapatın
+1. **`SQLException`** yakalayın ve uygun şekilde işleyin
+2. Hata kodlarını ve durumlarını kontrol edin
+3. Transaction'larda hata durumunda mutlaka rollback yapın
+4. Kaynakları finally bloğunda veya try-with-resources ile kapatın
 
 Bu rehber, Java JDBC ile veritabanı programlamanın temellerini kapsamaktadır. Uygulamalarınızda bu konseptleri kullanarak verimli ve güvenli veritabanı işlemleri gerçekleştirebilirsiniz.

@@ -1,5 +1,5 @@
 # java-jdbc
-I explain Java JDBC, DAO Interface and ORM concepts and widely used SQL Concepts Such as BloB,CloB,CRUD,Transaction,StoredProcedures,View.
+I explain Java JDBC, DAO Interface and ORM concepts and widely used SQL Concepts Such as BloB , CloB , CRUD , Transaction , StoredProcedures , View , MySql/PLOracle (Database Configuration)
 
 
 # **Java Veritabanı Erişim Teknolojileri: JDBC, DAO ve ORM (Hibernate)**
@@ -15,10 +15,6 @@ JDBC, Java'nın veritabanlarına bağlanmak için sunduğu temel API'dir.
 ![](https://www.tutorialspoint.com/jdbc/images/jdbc-architecture.jpg)
 
 *JDBC mimarisi - DriverManager üzerinden veritabanı bağlantısı*
-
-java
-
-Copy
 
 ```
 // Temel JDBC bağlantı örneği
@@ -49,10 +45,6 @@ DAO pattern, veri erişim katmanını uygulama mantığından ayırmak için kul
 ![](https://www.baeldung.com/wp-content/uploads/2018/11/DAO.png)
 
 *DAO deseni - Business katmanı ile veri kaynağı arasında aracı*
-
-java
-
-Copy
 
 ```
 // Employee DAO örneği
@@ -88,12 +80,10 @@ ORM (Object-Relational Mapping), nesneler ile veritabanı tabloları arasında k
 ![](https://www.tutorialspoint.com/hibernate/images/hibernate_architecture.jpg)
 
 *Hibernate mimarisi - Veritabanı bağımsız çalışma*
+*Hibernate Spring Dependency'lerine Maven ile otomatik import edilebilir.*
 
 ### **Hibernate Temel Özellikleri:**
 
-java
-
-Copy
 
 ```
 @Entity
@@ -155,10 +145,6 @@ public class HibernateExample {
 
 ### **Temel SQL Komutları**
 
-sql
-
-Copy
-
 ```
 -- Veri sorgulama
 SELECT * FROM table_name WHERE condition;
@@ -188,10 +174,6 @@ INNER JOIN table2 b ON a.key = b.key;
 
 ### **Transaction Yönetimi**
 
-sql
-
-Copy
-
 ```
 BEGIN TRANSACTION;
 -- SQL komutları
@@ -199,10 +181,6 @@ COMMIT; -- veya ROLLBACK;
 ```
 
 ### **Sık Kullanılan Fonksiyonlar**
-
-sql
-
-Copy
 
 ```
 -- Metin fonksiyonları
@@ -217,9 +195,6 @@ NOW(), CURDATE(), DATE_FORMAT(date, format), DATEDIFF(date1, date2)
 
 ## **Hibernate Query Language (HQL) Cheat Sheet**
 
-java
-
-Copy
 
 ```
 // Temel sorgu
@@ -308,13 +283,10 @@ JDBC, Java uygulamalarının veritabanlarıyla iletişim kurmasını sağlayan b
 
 ## **CRUD İşlemleri**
 
-CRUD (Create, Read, Update, Delete) temel veritabanı operasyonlarını ifade eder:
+*CRUD (Create, Read, Update, Delete) temel veritabanı operasyonlarını ifade eder:*
 
 ### **Create (Oluşturma)**
 
-java
-
-Copy
 
 ```
 String sql = "INSERT INTO employees (first_name, last_name) VALUES (?, ?)";
@@ -326,10 +298,6 @@ try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 ```
 
 ### **Read (Okuma)**
-
-java
-
-Copy
 
 ```
 String sql = "SELECT * FROM employees";
@@ -343,9 +311,6 @@ try (Statement stmt = conn.createStatement();
 
 ### **Update (Güncelleme)**
 
-java
-
-Copy
 
 ```
 String sql = "UPDATE employees SET last_name = ? WHERE id = ?";
@@ -358,10 +323,6 @@ try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
 ### **Delete (Silme)**
 
-java
-
-Copy
-
 ```
 String sql = "DELETE FROM employees WHERE id = ?";
 try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -373,10 +334,6 @@ try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 ## **Transaction Yönetimi**
 
 Transaction'lar, bir grup veritabanı işlemini atomik bir birim olarak çalıştırmamızı sağlar:
-
-java
-
-Copy
 
 ```
 try {
@@ -400,10 +357,6 @@ Stored procedure'ler veritabanı sunucusunda saklanan önceden derlenmiş SQL ko
 
 ### **IN Parametreli**
 
-java
-
-Copy
-
 ```
 String sql = "{call increase_salaries_for_department(?, ?)}";
 try (CallableStatement cstmt = conn.prepareCall(sql)) {
@@ -414,10 +367,6 @@ try (CallableStatement cstmt = conn.prepareCall(sql)) {
 ```
 
 ### **OUT Parametreli**
-
-java
-
-Copy
 
 ```
 String sql = "{call get_count_for_department(?, ?)}";
@@ -431,10 +380,6 @@ try (CallableStatement cstmt = conn.prepareCall(sql)) {
 
 ### **INOUT Parametreli**
 
-java
-
-Copy
-
 ```
 String sql = "{call greet_the_department(?)}";
 try (CallableStatement cstmt = conn.prepareCall(sql)) {
@@ -446,11 +391,6 @@ try (CallableStatement cstmt = conn.prepareCall(sql)) {
 ```
 
 ### **ResultSet Döndüren**
-
-java
-
-Copy
-
 ```
 String sql = "{call get_employees_for_department(?)}";
 try (CallableStatement cstmt = conn.prepareCall(sql)) {
@@ -477,10 +417,6 @@ try (CallableStatement cstmt = conn.prepareCall(sql)) {
 
 ### **1. Temel JDBC İşlemleri**
 
-markdown
-
-Copy
-
 ```
 1. Bağlantı oluşturma:
    Connection conn = DriverManager.getConnection(url, user, pass);
@@ -496,10 +432,6 @@ Copy
 ```
 
 ### **2. Transaction Yönetimi**
-
-markdown
-
-Copy
 
 ```
 1. Transaction başlatma:
@@ -517,10 +449,6 @@ Copy
 ```
 
 ### **3. Stored Procedure Kullanımı**
-
-markdown
-
-Copy
 
 ```
 1. IN parametre:
@@ -540,10 +468,6 @@ Copy
 ```
 
 ### **4. Best Practices**
-
-markdown
-
-Copy
 
 ```
 1. Her zaman try-with-resources kullanın
